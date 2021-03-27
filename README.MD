@@ -1,6 +1,6 @@
 # Data Infraestructure on AWS with AWS CDK (Cloud development kit)
 
-In this repo you can find a CDK stak that builds a serverless application that runs AWS EMR when is needed.
+In this repo you can find a CDK stack that builds a serverless application that runs AWS EMR when is needed.
 
 ## What is AWS CDK
 
@@ -23,7 +23,7 @@ We will build a Apache Spark as a service application, the idea is user AWS EMR 
 1. Set environmentVariables
     ```
         export account_id=<Your Account Id>
-        export bucket_name=apache-spark-latam-emr-cdk
+        export bucket_name=<Name of the bucket>
     ```
 2. Install node js
 3. Install aws cdk

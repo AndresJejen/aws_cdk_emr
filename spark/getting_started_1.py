@@ -1,16 +1,11 @@
 import argparse
-import logging
 
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
-
 
 def transform(bucket, data):
 
-    logger.info("Transforming Data.", data)
     
     with SparkSession.builder.appName("TrasformingData").getOrCreate() as spark:
         
@@ -25,7 +20,9 @@ def transform(bucket, data):
             ).\
             otherwise(F.lit(0))
         )
-        df_2.write.csv(f"s3a://{bucket}/data/output/resultado_{data}", mode="overwrite")
+
+        df_3 = df_2.select('is_police', 'local_site_name')
+        df_3.write.csv(f"s3a://{bucket}/data/output/resultado_{data}", mode="overwrite", header=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
