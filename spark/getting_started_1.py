@@ -19,10 +19,12 @@ def transform(bucket, data):
                 F.lit(1)
             ).\
             otherwise(F.lit(0))
-        )
+        ).select('is_police', 'local_site_name')
 
-        df_3 = df_2.select('is_police', 'local_site_name')
-        df_3.write.csv(f"s3a://{bucket}/data/output/resultado_{data}", mode="overwrite", header=True)
+        print("Una pequeña muestra")
+        print(df_2.show())
+
+        df_2.write.csv(f"s3a://{bucket}/data/output/resultado_{data}", mode="overwrite", header=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
