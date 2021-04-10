@@ -24,6 +24,7 @@ We will build a Apache Spark as a service application, the idea is user AWS EMR 
     ```
         export account_id=<Your Account Id>
         export bucket_name=<Name of the bucket>
+        export data_bucket_arn=<arn of data bucket>
     ```
 2. Install node js
 3. Install aws cdk

@@ -22,10 +22,12 @@ export class CdkStack extends cdk.Stack {
 
     const bucket_name = process.env.bucket_name || "";
     const account_id  = process.env.account_id; 
-    const bucket = new s3.Bucket(this, bucket_name, {
+    const bucket_data_arn = process.env.data_bucket_arn || "";
+
+    const scripts_bucket = new s3.Bucket(this, bucket_name, {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       bucketName: bucket_name
-    }); 
+    });
 
     const EMR_Applications: sfn_tasks.EmrCreateCluster.ApplicationConfigProperty[] = [
       {
@@ -104,6 +106,17 @@ export class CdkStack extends cdk.Stack {
               emr_ec2_role.roleArn,
               emr_role.roleArn
             ]  
+        }),
+        new iam.PolicyStatement(
+          {
+            effect: iam.Effect.ALLOW,
+            actions: [
+              "s3:*"
+            ],
+            resources: [
+              bucket_data_arn,
+              scripts_bucket.bucketArn
+            ]
         })
       ],
     });
@@ -111,7 +124,7 @@ export class CdkStack extends cdk.Stack {
     const step_function_role = new iam.Role(this, 'emr_role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'),
+        //iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'),
         EMRActionsPolicy,
       ]
     });
@@ -145,7 +158,7 @@ export class CdkStack extends cdk.Stack {
     const create_cluster = new sfn_tasks.EmrCreateCluster(this,'Create_EMR_Cluster', {
       resultPath: '$.CreateClusterResult',
       name: "emr_cluster_cdk_demo",
-      logUri: `s3://${bucket.bucketName}/cluster/logs/`,
+      logUri: `s3://${scripts_bucket.bucketName}/cluster/logs/`,
       releaseLabel: "emr-6.2.0",
       applications: EMR_Applications,
       serviceRole: emr_role,
@@ -225,7 +238,7 @@ export class CdkStack extends cdk.Stack {
         jar: "command-runner.jar",
         args: [
             "spark-submit",
-            `s3://${bucket_name}/getting_started_1.py`,
+            `s3://${bucket_name}/getting_started.py`,
             "--bucket",
             bucket_name,
             "--data_uri",

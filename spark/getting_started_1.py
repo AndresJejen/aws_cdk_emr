@@ -9,7 +9,7 @@ def transform(bucket, data):
     
     with SparkSession.builder.appName("TrasformingData").getOrCreate() as spark:
         
-        df = spark.read.csv(f"s3://{bucket}/data/input/{data}", inferSchema=True, header =True)
+        df = spark.read.csv(f"s3://{bucket}/data_in/{data}", inferSchema=True, header =True)
 
         df_2 = df.withColumn('is_police',\
             F.when(\
@@ -24,7 +24,7 @@ def transform(bucket, data):
         print("Una pequeña muestra")
         print(df_2.show())
 
-        df_2.write.csv(f"s3a://{bucket}/data/output/resultado_{data}", mode="overwrite", header=True)
+        df_2.write.csv(f"s3a://{bucket}/data_out/resultado_{data}", mode="overwrite", header=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
